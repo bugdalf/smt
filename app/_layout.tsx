@@ -1,29 +1,29 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import migrations from '@/drizzle/migrations';
+import { drizzle } from "drizzle-orm/expo-sqlite";
+import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
+import { Stack } from "expo-router";
+import { openDatabaseSync, SQLiteProvider } from 'expo-sqlite';
+import { Suspense } from 'react';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+export const DATABASE_NAME = 'example';
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+  const expoDb = openDatabaseSync(DATABASE_NAME);
+  const db = drizzle(expoDb);
 
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
-  }
+  const { success, error } = useMigrations(db, migrations)
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <Suspense>
+      <SQLiteProvider
+        databaseName={DATABASE_NAME}
+        options={{enableChangeListener: true}}
+        useSuspense
+      >
+        <Stack>
+          <Stack.Screen name='index' options={{ title: 'Tasks' }}/>
+        </Stack>
+      </SQLiteProvider>
+    </Suspense>
   );
 }
