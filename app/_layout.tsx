@@ -1,4 +1,5 @@
 import migrations from '@/drizzle/migrations';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { useFonts } from 'expo-font';
@@ -13,7 +14,7 @@ export default function RootLayout() {
   const expoDb = openDatabaseSync(DATABASE_NAME);
   const db = drizzle(expoDb);
 
-  const { success, error } = useMigrations(db, migrations);
+  const { success } = useMigrations(db, migrations);
 
   const [fontsLoaded] = useFonts({
     'GeistMono-Light': require('../assets/fonts/GeistMono-Light.ttf'), //300
@@ -34,18 +35,20 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaProvider>
-      <Suspense>
-        <SQLiteProvider
-          databaseName={DATABASE_NAME}
-          options={{ enableChangeListener: true }}
-          useSuspense
-        >
-          <Stack>
-            <Stack.Screen name='index' options={{ title: 'Tasks', headerShown: false }} />
-          </Stack>
-        </SQLiteProvider>
-      </Suspense>
-    </SafeAreaProvider>
+    <ThemeProvider>
+      <SafeAreaProvider>
+        <Suspense>
+          <SQLiteProvider
+            databaseName={DATABASE_NAME}
+            options={{ enableChangeListener: true }}
+            useSuspense
+          >
+            <Stack>
+              <Stack.Screen name='index' options={{ title: 'Tasks', headerShown: false }} />
+            </Stack>
+          </SQLiteProvider>
+        </Suspense>
+      </SafeAreaProvider>
+    </ThemeProvider>
   );
 }
