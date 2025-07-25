@@ -1,3 +1,4 @@
+import InputSpent from '@/components/InputSpent';
 import { Theme, useTheme } from '@/contexts/ThemeContext';
 import * as schema from '@/db/schema';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
@@ -9,11 +10,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function HomeScreen() {
   const { theme } = useTheme();
   const styles = createStyles(theme);
-
   const [data, setData] = useState<schema.Task[]>([]);
-
   const db = useSQLiteContext();
   const drizzleDb = drizzle(db, { schema });
+
+  const [amount, setAmount] = useState('');
 
   useEffect(() => {
     const load = async () => {
@@ -26,13 +27,11 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Simple Money Tracker</Text>
-      <Text style={styles.title2}>Simple Money Tracker</Text>
-      <Text style={styles.title3}>Simple Money Tracker</Text>
-      <Text style={styles.title4}>Simple Money Tracker</Text>
-      <Text style={styles.title5}>Simple Money Tracker</Text>
-      {data.map((item) => (
+      <InputSpent label="Ingrese monto:" value={amount} onChangeText={setAmount} />
+      
+      {/* {data.map((item) => (
         <Text key={item.id} style={styles.text}>{item.name}</Text>
-      ))}
+      ))} */}
     </SafeAreaView>
   );
 }
@@ -43,8 +42,6 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: theme.colors.background,
-    borderColor: theme.colors.border,
-    borderWidth: 2,
   },
   title: {
     fontFamily: 'GeistMono-Light',
