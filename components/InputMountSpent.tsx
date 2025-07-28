@@ -2,14 +2,14 @@ import { Theme, useTheme } from '@/contexts/ThemeContext';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
-interface InputSpentProps {
+interface InputMountSpentProps {
   label: string;
   value: string;
   onChangeText: (value: string) => void;
   placeholder?: string;
 }
 
-export default function InputSpent({label, value, onChangeText, placeholder = "0.00"}: InputSpentProps) {
+export default function InputMountSpent({label, value, onChangeText, placeholder = "0.00"}: InputMountSpentProps) {
   const { theme } = useTheme();
   const styles = createStyles(theme);
 
@@ -65,19 +65,16 @@ export default function InputSpent({label, value, onChangeText, placeholder = "0
         />
       </View>
       {error && <Text style={styles.errorText}>{error}</Text>}
-      <Text style={styles.output}>S/ {formatValue()}</Text>
     </View>
   );
 }
 
 const createStyles = (theme: Theme) => StyleSheet.create({
   container: {
-    padding: 20,
-    width: '100%',
+    width: '40%',
   },
   label: {
     fontFamily: 'GeistMono-Light',
-    marginBottom: 8,
     color: theme.colors.text,
   },
   currencyInputContainer: {
@@ -87,7 +84,7 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     borderColor: theme.colors.border,
     borderRadius: 8,
     backgroundColor: theme.colors.surface,
-    marginBottom: 8,
+    padding: 0,
   },
   currencySymbol: {
     fontFamily: 'GeistMono-Bold',
