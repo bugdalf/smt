@@ -1,17 +1,21 @@
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { integer, real, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
-export const tasks = sqliteTable('tasks', {
+export const spent = sqliteTable('spent', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  name: text('name').notNull(),
-  list_id: integer('list_id')
+  amount: real('amount').notNull(),
+  description: text('description').notNull(),
+  category_id: integer('category_id')
     .notNull()
-    .references(() => lists.id),
+    .references(() => categories.id),
+  date: text('date').notNull(),
 });
 
-export const lists = sqliteTable('lists', {
+export const categories = sqliteTable('categories', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
+  icon: text('icon').notNull(),
 });
 
 // Export Task to use as an interface in your app
-export type Task = typeof tasks.$inferSelect;
+export type Spent = typeof spent.$inferSelect;
+export type Category = typeof categories.$inferSelect;

@@ -1,5 +1,5 @@
-import migrations from '@/drizzle/migrations';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import migrations from '@/drizzle/migrations';
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { useFonts } from 'expo-font';
@@ -7,8 +7,9 @@ import { Stack } from "expo-router";
 import { openDatabaseSync, SQLiteProvider } from 'expo-sqlite';
 import { Suspense, useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import addDummyData from './addDummyData';
 
-export const DATABASE_NAME = 'example';
+export const DATABASE_NAME = 'example1';
 
 export default function RootLayout() {
   const expoDb = openDatabaseSync(DATABASE_NAME);
@@ -26,7 +27,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (success) {
-      // addDummyData(db);
+      addDummyData(db);
     }
   }, [success])
 
@@ -44,7 +45,7 @@ export default function RootLayout() {
             useSuspense
           >
             <Stack>
-              <Stack.Screen name='index' options={{ title: 'Tasks', headerShown: false }} />
+              <Stack.Screen name='index' options={{ title: 'Simple Money Tracker', headerShown: false }} />
             </Stack>
           </SQLiteProvider>
         </Suspense>

@@ -1,11 +1,11 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "b75e8c40-9f09-4bdc-8e69-a14f67f879e6",
+  "id": "e10bd669-6ea2-412a-9b2c-f1addc9321e4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "lists": {
-      "name": "lists",
+    "categories": {
+      "name": "categories",
       "columns": {
         "id": {
           "name": "id",
@@ -16,6 +16,13 @@
         },
         "name": {
           "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "icon": {
+          "name": "icon",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -28,8 +35,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "tasks": {
-      "name": "tasks",
+    "spent": {
+      "name": "spent",
       "columns": {
         "id": {
           "name": "id",
@@ -38,16 +45,30 @@
           "notNull": true,
           "autoincrement": true
         },
-        "name": {
-          "name": "name",
+        "amount": {
+          "name": "amount",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "list_id": {
-          "name": "list_id",
+        "category_id": {
+          "name": "category_id",
           "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "date": {
+          "name": "date",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -55,12 +76,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "tasks_list_id_lists_id_fk": {
-          "name": "tasks_list_id_lists_id_fk",
-          "tableFrom": "tasks",
-          "tableTo": "lists",
+        "spent_category_id_categories_id_fk": {
+          "name": "spent_category_id_categories_id_fk",
+          "tableFrom": "spent",
+          "tableTo": "categories",
           "columnsFrom": [
-            "list_id"
+            "category_id"
           ],
           "columnsTo": [
             "id"

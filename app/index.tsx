@@ -1,5 +1,4 @@
-import InputInfoSpent from '@/components/InputInfoSpent';
-import InputMountSpent from '@/components/InputMountSpent';
+import SpentForm from '@/components/SpentForm';
 import { Theme, useTheme } from '@/contexts/ThemeContext';
 import * as schema from '@/db/schema';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
@@ -20,18 +19,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function HomeScreen() {
   const { theme } = useTheme();
   const styles = createStyles(theme);
-  const [data, setData] = useState<schema.Task[]>([]);
+  const [data, setData] = useState<schema.Spent[]>([]);
   const db = useSQLiteContext();
   const drizzleDb = drizzle(db, { schema });
-
-  const [amount, setAmount] = useState('');
-  const [description, setDescription] = useState('');
 
   useEffect(() => {
     const load = async () => {
       try {
-        const data = await drizzleDb.query.tasks.findMany();
+        const data = await drizzleDb.query.spent.findMany();
         setData(data);
+        console.log(data)
       } catch (error) {
         console.error('Error loading tasks:', error);
       }
@@ -60,18 +57,14 @@ export default function HomeScreen() {
             <View style={styles.header}>
               <Text style={styles.title}>Simple Money Tracker</Text>
             </View>
-            
-            <View style={styles.form}>
-              <InputMountSpent 
-                label="Ingrese monto:" 
-                value={amount} 
-                onChangeText={setAmount} 
-              />
-              <InputInfoSpent 
-                label="Ingrese descripción:" 
-                value={description} 
-                onChangeText={setDescription} 
-              />
+            <SpentForm />
+            <View style={styles.dataContainer}>
+              {data.map((item) => (
+                <View key={item.id} style={styles.taskContainer}>
+                  <Text style={styles.text}>{item.description}</Text>
+                  <Text style={styles.text}>{item.amount}</Text>
+                </View>
+              ))}
             </View>
           </ScrollView>
         </TouchableWithoutFeedback>
@@ -84,7 +77,6 @@ const createStyles = (theme: Theme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
-    paddingBottom: 30,
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -94,30 +86,29 @@ const createStyles = (theme: Theme) => StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-start',
   },
   header: {
-    flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     paddingTop: 20,
   },
   title: {
     fontFamily: 'GeistMono-Light',
     fontWeight: '100',
-    fontSize: 24,
+    fontSize: 20,
     textAlign: 'center',
     color: theme.colors.text,
-  },
-  form: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 2,
   },
   dataContainer: {
     paddingHorizontal: 20,
     paddingBottom: 20,
+  },
+  taskContainer: {
+    flex: 1,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
   },
   text: {
     fontFamily: 'GeistMono-Regular',

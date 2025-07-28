@@ -34,11 +34,6 @@ export default function InputInfoSpent({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>
-        {label}(<Text style={styles.counter}>
-          {value.length}/{maxLength}
-        </Text>)
-      </Text>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -56,17 +51,13 @@ export default function InputInfoSpent({
 
 const createStyles = (theme: Theme) => StyleSheet.create({
   container: {
-    width: '60%',
+    width: '100%',
   },
   inputContainer: {
     borderWidth: 1,
     borderColor: theme.colors.border,
     borderRadius: 8,
     backgroundColor: theme.colors.surface,
-  },
-  label: {
-    fontFamily: 'GeistMono-Light',
-    color: theme.colors.text,
   },
   input: {
     fontFamily: 'GeistMono-Regular',
@@ -84,11 +75,5 @@ const createStyles = (theme: Theme) => StyleSheet.create({
   errorContainer: {
     borderColor: '#e74c3c',
     borderWidth: 2,
-  },
-  counter: {
-    fontFamily: 'GeistMono-Light',
-    fontSize: 12,
-    color: theme.colors.textSecondary,
-    textAlign: 'center',
   },
 })

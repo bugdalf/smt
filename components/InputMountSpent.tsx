@@ -37,19 +37,18 @@ export default function InputMountSpent({label, value, onChangeText, placeholder
     onChangeText(cleaned);
   };
 
-  const formatValue = () => {
-    if (!value) return '';
-    const num = parseFloat(value);
-    if (isNaN(num)) return '';
-    return num.toLocaleString('es-PE', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
-  };
+  // const formatValue = () => {
+  //   if (!value) return '';
+  //   const num = parseFloat(value);
+  //   if (isNaN(num)) return '';
+  //   return num.toLocaleString('es-PE', {
+  //     minimumFractionDigits: 2,
+  //     maximumFractionDigits: 2
+  //   });
+  // };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
       <View style={[
         styles.currencyInputContainer,
         error && styles.errorContainer
@@ -71,11 +70,7 @@ export default function InputMountSpent({label, value, onChangeText, placeholder
 
 const createStyles = (theme: Theme) => StyleSheet.create({
   container: {
-    width: '40%',
-  },
-  label: {
-    fontFamily: 'GeistMono-Light',
-    color: theme.colors.text,
+    width: '100%',
   },
   currencyInputContainer: {
     flexDirection: 'row',
