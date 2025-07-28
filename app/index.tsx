@@ -1,4 +1,5 @@
 import SpentForm from '@/components/SpentForm';
+import SpentList from '@/components/SpentList';
 import { Theme, useTheme } from '@/contexts/ThemeContext';
 import * as schema from '@/db/schema';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
@@ -28,7 +29,6 @@ export default function HomeScreen() {
       try {
         const data = await drizzleDb.query.spent.findMany();
         setData(data);
-        console.log(data)
       } catch (error) {
         console.error('Error loading tasks:', error);
       }
@@ -58,6 +58,7 @@ export default function HomeScreen() {
               <Text style={styles.title}>Simple Money Tracker</Text>
             </View>
             <SpentForm />
+            <SpentList />
             <View style={styles.dataContainer}>
               {data.map((item) => (
                 <View key={item.id} style={styles.taskContainer}>
