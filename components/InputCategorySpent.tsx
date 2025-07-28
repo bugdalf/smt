@@ -1,53 +1,78 @@
 // componente de listado de botones
 
 import { Theme, useTheme } from "@/contexts/ThemeContext";
-import { useState } from "react";
+import * as schema from "@/db/schema";
+import { drizzle } from "drizzle-orm/expo-sqlite";
+import { useSQLiteContext } from "expo-sqlite";
+import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import IconCategory from "./IconCatergory";
+import IconCategory, { IconName } from "./IconCatergory";
 
-export default function InputCategorySpent() {
+interface InputCategorySpentProps {
+  category: schema.Category | undefined;
+  onChangeCategory: (value: schema.Category) => void;
+}
 
-  const [selectedCategory, setSelectedCategory] = useState('');
+export default function InputCategorySpent({
+  category,
+  onChangeCategory,
+}: InputCategorySpentProps) {
+  const [categories, setCategories] = useState<schema.Category[]>([]);
+
+  const db = useSQLiteContext();
+  const drizzleDb = drizzle(db, { schema });
 
   const { theme } = useTheme();
   const styles = createStyles(theme);
 
-  const categories = [
-    { id: 1, name: 'Alimentos' },
-    { id: 2, name: 'Transporte' },
-    { id: 3, name: 'Salud' },
-    { id: 4, name: 'Entretenimiento' },
-    { id: 5, name: 'Otros' },
-  ];
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await drizzleDb.query.categories.findMany();
+        setCategories(data);
+        console.log(data);
+      } catch (error) {
+        console.error('Error loading categories:', error);
+      }
+    };
+    load();
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <Text>Ingrese categoría:</Text>
-      <IconCategory name="PiggyBank" color="red" size={20} />
-      {categories.map((category) => (
-        <Pressable
-          key={category.id}
-          style={[
-            styles.button,
-            selectedCategory === category.name && styles.selectedButton
-          ]}
-          onPress={() => setSelectedCategory(category.name)}>
-          <Text style={[
-            styles.buttonText,
-            selectedCategory === category.name && styles.selectedButtonText
-          ]}>{category.name}</Text>
-        </Pressable>
-      ))}
+    <View>
+      <Text style={styles.text}>Ingrese categoría:</Text>
+      <View style={styles.container}>
+        {categories.map((cat) => (
+          <Pressable
+            key={cat.id}
+            style={[
+              styles.button,
+              category?.id === cat.id && styles.selectedButton
+            ]}
+            onPress={() => onChangeCategory(cat)}>
+            <IconCategory name={cat.icon as IconName} color={category?.id === cat.id ? theme.colors.background : theme.colors.primary} size={20} />
+          </Pressable>
+        ))}
+      </View>
     </View>
   )
 }
 
 const createStyles = (theme: Theme) => StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: theme.colors.background,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 50,
+    height: 50,
     padding: 10,
     margin: 5,
     borderRadius: 5,
@@ -55,15 +80,12 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.colors.primary,
   },
-  buttonText: {
-    fontFamily: 'GeistMono-Regular',
-    color: theme.colors.primary,
-  },
   selectedButton: {
     backgroundColor: theme.colors.primary,
     color: theme.colors.background,
   },
-  selectedButtonText: {
-    color: theme.colors.background,
+  text: {
+    fontFamily: 'GeistMono-Regular',
+    color: theme.colors.textSecondary,
   },
 })

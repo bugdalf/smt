@@ -34,7 +34,7 @@ export default function HomeScreen() {
       }
     };
     load();
-  }, []);
+  }, [drizzleDb]);
 
   const dismissKeyboard = () => {
     Keyboard.dismiss();

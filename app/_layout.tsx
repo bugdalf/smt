@@ -9,7 +9,7 @@ import { Suspense, useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import addDummyData from './addDummyData';
 
-export const DATABASE_NAME = 'example1';
+export const DATABASE_NAME = 'example';
 
 export default function RootLayout() {
   const expoDb = openDatabaseSync(DATABASE_NAME);
