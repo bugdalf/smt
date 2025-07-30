@@ -6,6 +6,7 @@ import { useFonts } from 'expo-font';
 import { Stack } from "expo-router";
 import { openDatabaseSync, SQLiteProvider } from 'expo-sqlite';
 import { Suspense, useEffect } from 'react';
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import addDummyData from './addDummyData';
 
@@ -44,9 +45,11 @@ export default function RootLayout() {
             options={{ enableChangeListener: true }}
             useSuspense
           >
+            <KeyboardProvider>
             <Stack>
               <Stack.Screen name='index' options={{ title: 'Simple Money Tracker', headerShown: false }} />
             </Stack>
+            </KeyboardProvider>
           </SQLiteProvider>
         </Suspense>
       </SafeAreaProvider>

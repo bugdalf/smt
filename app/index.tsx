@@ -6,15 +6,11 @@ import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import {
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
   StyleSheet,
   Text,
-  TouchableWithoutFeedback,
   View
 } from 'react-native';
+import { KeyboardAvoidingView, useKeyboardAnimation } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
@@ -23,6 +19,14 @@ export default function HomeScreen() {
   const [data, setData] = useState<schema.Spent[]>([]);
   const db = useSQLiteContext();
   const drizzleDb = drizzle(db, { schema });
+
+  const { height, progress } = useKeyboardAnimation();
+
+  const scale = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 2],
+  });
+
 
   useEffect(() => {
     const load = async () => {
@@ -36,39 +40,26 @@ export default function HomeScreen() {
     load();
   }, [drizzleDb]);
 
-  const dismissKeyboard = () => {
-    Keyboard.dismiss();
-  };
-
   return (
     <SafeAreaView style={styles.container} >
       <KeyboardAvoidingView
+        behavior={'padding'}
         style={styles.keyboardAvoidingView}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={0}
       >
-        <TouchableWithoutFeedback onPress={dismissKeyboard}>
-          <ScrollView
-            style={styles.scrollView}
-            contentContainerStyle={styles.scrollContent}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-          >
-            <View style={styles.header}>
-              <Text style={styles.title}>Simple Money Tracker</Text>
+        <View style={styles.header}>
+          <Text style={styles.title}>Simple Money Tracker</Text>
+        </View>
+        <SpentForm />
+        <SpentList />
+        <View style={styles.dataContainer}>
+          {data.map((item) => (
+            <View key={item.id} style={styles.taskContainer}>
+              <Text style={styles.text}>{item.description}</Text>
+              <Text style={styles.text}>{item.amount}</Text>
             </View>
-            <SpentForm />
-            <SpentList />
-            <View style={styles.dataContainer}>
-              {data.map((item) => (
-                <View key={item.id} style={styles.taskContainer}>
-                  <Text style={styles.text}>{item.description}</Text>
-                  <Text style={styles.text}>{item.amount}</Text>
-                </View>
-              ))}
-            </View>
-          </ScrollView>
-        </TouchableWithoutFeedback>
+          ))}
+        </View>
+
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -81,6 +72,7 @@ const createStyles = (theme: Theme) => StyleSheet.create({
   },
   keyboardAvoidingView: {
     flex: 1,
+    justifyContent: 'flex-end',
   },
   scrollView: {
     flex: 1,
