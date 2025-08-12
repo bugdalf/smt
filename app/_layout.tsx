@@ -4,33 +4,62 @@ import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { useFonts } from 'expo-font';
 import { Stack } from "expo-router";
-import { openDatabaseSync, SQLiteProvider } from 'expo-sqlite';
-import { Suspense, useEffect } from 'react';
+import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
+import { useEffect } from 'react';
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import addDummyData from './addDummyData';
+// import resetDatabase from './resetDatabase';
 
 export const DATABASE_NAME = 'example';
 
-export default function RootLayout() {
-  const expoDb = openDatabaseSync(DATABASE_NAME);
-  const db = drizzle(expoDb);
-
-  const { success } = useMigrations(db, migrations);
-
-  const [fontsLoaded] = useFonts({
-    'GeistMono-Light': require('../assets/fonts/GeistMono-Light.ttf'), //300
-    'GeistMono-Regular': require('../assets/fonts/GeistMono-Regular.ttf'), //400
-    'GeistMono-Medium': require('../assets/fonts/GeistMono-Medium.ttf'), //500
-    'GeistMono-SemiBold': require('../assets/fonts/GeistMono-SemiBold.ttf'), //600
-    'GeistMono-Bold': require('../assets/fonts/GeistMono-Bold.ttf'), //700
-  });
+// Componente interno que maneja las migraciones
+function DatabaseManager() {
+  console.log('DatabaseManager renderizado');
+  
+  const database = useSQLiteContext();
+  console.log('useSQLiteContext obtenido:', !!database);
+  
+  const db = drizzle(database);
+  console.log('drizzle db creado:', !!db);
+  
+  const { success, error } = useMigrations(db, migrations);
+  console.log('Migration status - success:', success, 'error:', error);
 
   useEffect(() => {
+    // resetDatabase(db)
+    console.log('useEffect en DatabaseManager - success:', success, 'error:', error);
+    
     if (success) {
-      addDummyData(db);
+      console.log('Ejecutando addDummyData...');
+      try {
+        addDummyData(db);
+        console.log('addDummyData completado');
+      } catch (err) {
+        console.error('Error en addDummyData:', err);
+      }
     }
-  }, [success])
+    
+    if (error) {
+      console.error('Error en migraciones:', error);
+    }
+  }, [success, error, db]);
+
+  return null;
+}
+
+export default function RootLayout() {
+  console.log('RootLayout renderizado');
+  
+  const [fontsLoaded] = useFonts({
+    'GeistMono-Light': require('../assets/fonts/GeistMono-Light.ttf'),
+    'GeistMono-Regular': require('../assets/fonts/GeistMono-Regular.ttf'),
+    'GeistMono-Medium': require('../assets/fonts/GeistMono-Medium.ttf'),
+    'GeistMono-SemiBold': require('../assets/fonts/GeistMono-SemiBold.ttf'),
+    'GeistMono-Bold': require('../assets/fonts/GeistMono-Bold.ttf'),
+  });
+
+  console.log('Fonts loaded:', fontsLoaded);
 
   if (!fontsLoaded) {
     return null;
@@ -39,19 +68,21 @@ export default function RootLayout() {
   return (
     <ThemeProvider>
       <SafeAreaProvider>
-        <Suspense>
-          <SQLiteProvider
-            databaseName={DATABASE_NAME}
-            options={{ enableChangeListener: true }}
-            useSuspense
-          >
-            <KeyboardProvider>
+        <SQLiteProvider
+          databaseName={DATABASE_NAME}
+          options={{ enableChangeListener: true }}
+          // Remover useSuspense para evitar problemas
+        >
+          <DatabaseManager />
+          <KeyboardProvider>
             <Stack>
-              <Stack.Screen name='index' options={{ title: 'Simple Money Tracker', headerShown: false }} />
+              <Stack.Screen 
+                name='index' 
+                options={{ title: 'Simple Money Tracker', headerShown: false }} 
+              />
             </Stack>
-            </KeyboardProvider>
-          </SQLiteProvider>
-        </Suspense>
+          </KeyboardProvider>
+        </SQLiteProvider>
       </SafeAreaProvider>
     </ThemeProvider>
   );

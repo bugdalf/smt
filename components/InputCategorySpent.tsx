@@ -4,7 +4,7 @@ import { Theme, useTheme } from "@/contexts/ThemeContext";
 import * as schema from "@/db/schema";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useSQLiteContext } from "expo-sqlite";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import IconCategory from "./IconCatergory";
 
@@ -26,19 +26,6 @@ export default function InputCategorySpent({
 
   const { theme } = useTheme();
   const styles = createStyles(theme);
-
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const data = await drizzleDb.query.categories.findMany();
-        setCategories(data);
-      } catch (error) {
-        console.error('Error loading categories:', error);
-      }
-    };
-    load();
-  }, []);
 
   return (
     <View>

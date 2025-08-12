@@ -12,8 +12,9 @@ export const spent = sqliteTable('spent', {
 
 export const categories = sqliteTable('categories', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  name: text('name').notNull(),
-  icon: text('icon').notNull(),
+  name: text('name').notNull().default(''),
+  icon: text('icon').notNull().default(''),
+  color: text('color').notNull().default(''),
 });
 
 // Export Task to use as an interface in your app

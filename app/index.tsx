@@ -10,7 +10,7 @@ import {
   Text,
   View
 } from 'react-native';
-import { KeyboardAvoidingView, useKeyboardAnimation } from 'react-native-keyboard-controller';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
@@ -20,21 +20,14 @@ export default function HomeScreen() {
   const db = useSQLiteContext();
   const drizzleDb = drizzle(db, { schema });
 
-  const { height, progress } = useKeyboardAnimation();
-
-  const scale = progress.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 2],
-  });
-
-
   useEffect(() => {
     const load = async () => {
       try {
         const data = await drizzleDb.query.spent.findMany();
         setData(data);
+        // console.log(data);
       } catch (error) {
-        console.error('Error loading tasks:', error);
+        console.error('Error loading gastor:', error);
       }
     };
     load();
@@ -51,15 +44,6 @@ export default function HomeScreen() {
         </View>
         <SpentList />
         <SpentForm />
-        {/* <View style={styles.dataContainer}>
-          {data.map((item) => (
-            <View key={item.id} style={styles.taskContainer}>
-              <Text style={styles.text}>{item.description}</Text>
-              <Text style={styles.text}>{item.amount}</Text>
-            </View>
-          ))}
-        </View> */}
-
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -74,13 +58,6 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
   },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'flex-start',
-  },
   header: {
     justifyContent: 'flex-start',
     alignItems: 'center',
@@ -92,21 +69,5 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     fontSize: 20,
     textAlign: 'center',
     color: theme.colors.text,
-  },
-  dataContainer: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  taskContainer: {
-    flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  text: {
-    fontFamily: 'GeistMono-Regular',
-    fontWeight: '400',
-    color: theme.colors.text,
-    marginBottom: 5,
   }
 });

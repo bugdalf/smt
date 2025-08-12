@@ -9,9 +9,10 @@ export default async function addDummyData (db: ExpoSQLiteDatabase) {
   console.log('Inserting categories');
 
   await db.insert(categories).values([
-    { name: 'Casa', icon: 'House' },
-    { name: 'Carro', icon: 'Car' },
-    { name: 'Banco', icon: 'PiggyBank' }, 
+    { name: 'Casados', icon: 'House', color: '#EF4444' },
+    { name: 'Carro', icon: 'Car', color: '#3B82F6' },
+    { name: 'Banco', icon: 'PiggyBank', color: '#22C55E' },
+    { name: 'Comida', icon: 'Hamburger', color: '#22C55E' },
   ])
 
   AsyncStorage.setItemSync('dbInitialized', 'true');

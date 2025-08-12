@@ -2,9 +2,9 @@ import { Theme, useTheme } from "@/contexts/ThemeContext";
 import * as schema from "@/db/schema";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useSQLiteContext } from "expo-sqlite";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import IconCategory from "./IconCatergory";
+import IconCategory, { IconName } from "./IconCatergory";
 import InputCategorySpent from "./InputCategorySpent";
 import InputInfoSpent from "./InputInfoSpent";
 import InputMountSpent from "./InputMountSpent";
@@ -19,6 +19,7 @@ export default function SpentForm() {
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<schema.Category | undefined>(undefined);
+  const [categories, setCategories] = useState<schema.Category[]>([])
 
   const [isVisibleOptions, setIsVisibleOptions] = useState(true);
 
@@ -42,11 +43,32 @@ export default function SpentForm() {
     insert();
   }
 
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await drizzleDb.query.categories.findMany();
+        setCategories(data);
+      } catch (error) {
+        console.error('Error loading categories:', error);
+      }
+    };
+    load();
+  }, []);
+
   return (
     <View style={styles.container}>
       {isVisibleOptions && (
         <View style={styles.options}>
-          <Text>Este view se muestra condicionalmente</Text>
+          {categories.map((category) => (
+            <TouchableOpacity
+              key={category.id}
+              style={styles.option}
+              onPress={() => setCategory(category)}
+            >
+              <IconCategory name={category.icon as IconName} color={theme.colors.text} size={20} />
+              <Text>{category.name}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
       )}
       <View style={styles.form}>
@@ -86,10 +108,18 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     width: '100%',
-    justifyContent: 'space-between',
     alignItems: 'center',
     gap: 2,
     padding: 4
+  },
+  option: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 4,
+    gap: 2,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    backgroundColor: theme.colors.surface,
   },
   form: {
     flexDirection: 'row',

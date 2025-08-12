@@ -8,6 +8,20 @@
       "when": 1753680398753,
       "tag": "0000_little_gorgon",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1755022587588,
+      "tag": "0001_lush_ironclad",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1755024428867,
+      "tag": "0002_deep_thundra",
+      "breakpoints": true
     }
   ]
 }
