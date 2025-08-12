@@ -70,7 +70,7 @@ export default function InputMountSpent({label, value, onChangeText, placeholder
 
 const createStyles = (theme: Theme) => StyleSheet.create({
   container: {
-    width: '100%',
+    flex: 3
   },
   currencyInputContainer: {
     flexDirection: 'row',

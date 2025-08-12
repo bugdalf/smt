@@ -5,8 +5,8 @@ import * as schema from "@/db/schema";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useSQLiteContext } from "expo-sqlite";
 import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import IconCategory, { IconName } from "./IconCatergory";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import IconCategory from "./IconCatergory";
 
 interface InputCategorySpentProps {
   category: schema.Category | undefined;
@@ -41,7 +41,14 @@ export default function InputCategorySpent({
 
   return (
     <View>
-      <Text style={styles.text}>Ingrese categoría:</Text>
+      <TouchableOpacity
+        style={styles.buttonTrigger}
+        onPress={() => console.log('asf')}
+        activeOpacity={0.7}
+      >
+        <IconCategory name="LayoutGrid" color={theme.colors.primary} size={20} />
+      </TouchableOpacity>
+      {/* <Text style={styles.text}>Ingrese categoría:</Text>
       <View style={styles.container}>
         {categories.map((cat) => (
           <Pressable
@@ -54,7 +61,7 @@ export default function InputCategorySpent({
             <IconCategory name={cat.icon as IconName} color={category?.id === cat.id ? theme.colors.background : theme.colors.primary} size={20} />
           </Pressable>
         ))}
-      </View>
+      </View> */}
     </View>
   )
 }
@@ -64,6 +71,16 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     backgroundColor: theme.colors.background,
     flexDirection: 'row',
     flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonTrigger: {
+    width: 42,
+    height: 42,
+    borderRadius: 99,
+    borderColor: theme.colors.primary,
+    borderWidth: 1,
+    backgroundColor: theme.colors.background,
     justifyContent: 'center',
     alignItems: 'center',
   },

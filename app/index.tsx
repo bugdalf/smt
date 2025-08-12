@@ -49,16 +49,16 @@ export default function HomeScreen() {
         <View style={styles.header}>
           <Text style={styles.title}>Simple Money Tracker</Text>
         </View>
-        <SpentForm />
         <SpentList />
-        <View style={styles.dataContainer}>
+        <SpentForm />
+        {/* <View style={styles.dataContainer}>
           {data.map((item) => (
             <View key={item.id} style={styles.taskContainer}>
               <Text style={styles.text}>{item.description}</Text>
               <Text style={styles.text}>{item.amount}</Text>
             </View>
           ))}
-        </View>
+        </View> */}
 
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -72,7 +72,7 @@ const createStyles = (theme: Theme) => StyleSheet.create({
   },
   keyboardAvoidingView: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
   },
   scrollView: {
     flex: 1,

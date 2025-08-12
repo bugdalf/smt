@@ -51,7 +51,7 @@ export default function InputInfoSpent({
 
 const createStyles = (theme: Theme) => StyleSheet.create({
   container: {
-    width: '100%',
+    flex: 3,
   },
   inputContainer: {
     borderWidth: 1,

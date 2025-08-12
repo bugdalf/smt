@@ -1,8 +1,10 @@
+import { Theme, useTheme } from "@/contexts/ThemeContext";
 import * as schema from "@/db/schema";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useSQLiteContext } from "expo-sqlite";
 import { useState } from "react";
-import { Button, StyleSheet, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import IconCategory from "./IconCatergory";
 import InputCategorySpent from "./InputCategorySpent";
 import InputInfoSpent from "./InputInfoSpent";
 import InputMountSpent from "./InputMountSpent";
@@ -10,6 +12,9 @@ import InputMountSpent from "./InputMountSpent";
 export default function SpentForm() {
   const db = useSQLiteContext();
   const drizzleDb = drizzle(db, { schema });
+
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
 
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
@@ -51,19 +56,32 @@ export default function SpentForm() {
         category={category}
         onChangeCategory={setCategory}
       />
-      <Button
-        title="Guardar"
+      <TouchableOpacity
+        style={styles.button}
         onPress={handleSubmit}
-      />
+        activeOpacity={0.7}
+      >
+        <IconCategory name="ArrowBigUpDash" color="white" size={25} />
+      </TouchableOpacity>
     </View>
   )
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) => StyleSheet.create({
   form: {
+    flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
-    gap: 5,
-    padding: 20
+    alignItems: 'center',
+    gap: 2,
+    padding: 4
+  },
+  button: {
+    width: 42,
+    height: 42,
+    borderRadius: 99,
+    backgroundColor: theme.colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 })
