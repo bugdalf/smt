@@ -1,6 +1,6 @@
 // componente de listado de botones
 
-import { Theme, useTheme } from "@/contexts/ThemeContext";
+import { ColorKey, Theme, useTheme } from "@/contexts/ThemeContext";
 import * as schema from "@/db/schema";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useSQLiteContext } from "expo-sqlite";
@@ -8,8 +8,15 @@ import { useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import IconCategory from "./IconCatergory";
 
+export interface Category {
+  id: number;
+  name: string;
+  icon: string;
+  color: ColorKey;
+}
+
 interface InputCategorySpentProps {
-  category: schema.Category | undefined;
+  category: Category | undefined;
   isVisibleOptions: boolean;
   onSetVisibleOptions: (value: boolean) => void;
 }
@@ -19,7 +26,7 @@ export default function InputCategorySpent({
   isVisibleOptions,
   onSetVisibleOptions,
 }: InputCategorySpentProps) {
-  const [categories, setCategories] = useState<schema.Category[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const db = useSQLiteContext();
   const drizzleDb = drizzle(db, { schema });

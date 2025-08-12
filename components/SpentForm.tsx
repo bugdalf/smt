@@ -1,11 +1,11 @@
-import { Theme, useTheme } from "@/contexts/ThemeContext";
+import { ColorKey, Theme, useTheme } from "@/contexts/ThemeContext";
 import * as schema from "@/db/schema";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useSQLiteContext } from "expo-sqlite";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import IconCategory, { IconName } from "./IconCatergory";
-import InputCategorySpent from "./InputCategorySpent";
+import InputCategorySpent, { Category } from "./InputCategorySpent";
 import InputInfoSpent from "./InputInfoSpent";
 import InputMountSpent from "./InputMountSpent";
 
@@ -18,8 +18,8 @@ export default function SpentForm() {
 
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState<schema.Category | undefined>(undefined);
-  const [categories, setCategories] = useState<schema.Category[]>([])
+  const [category, setCategory] = useState<Category | undefined>(undefined);
+  const [categories, setCategories] = useState<Category[]>([])
 
   const [isVisibleOptions, setIsVisibleOptions] = useState(true);
 
@@ -47,7 +47,12 @@ export default function SpentForm() {
     const load = async () => {
       try {
         const data = await drizzleDb.query.categories.findMany();
-        setCategories(data);
+        setCategories(data.map((category) => ({
+          id: category.id,
+          name: category.name,
+          icon: category.icon,
+          color: category.color as ColorKey,
+        })));
       } catch (error) {
         console.error('Error loading categories:', error);
       }
@@ -59,16 +64,35 @@ export default function SpentForm() {
     <View style={styles.container}>
       {isVisibleOptions && (
         <View style={styles.options}>
-          {categories.map((category) => (
-            <TouchableOpacity
-              key={category.id}
-              style={styles.option}
-              onPress={() => setCategory(category)}
-            >
-              <IconCategory name={category.icon as IconName} color={theme.colors.text} size={20} />
-              <Text>{category.name}</Text>
-            </TouchableOpacity>
-          ))}
+          {categories.map((category) => {
+            const categoryColor = theme.colors[category.color];
+            return (
+              <TouchableOpacity
+                key={category.id}
+                style={[
+                  styles.option,
+                  { backgroundColor: categoryColor }
+                ]}
+                onPress={() => setCategory(category)}
+              >
+                <IconCategory
+                  name={category.icon as IconName}
+                  color={'white'}
+                  size={20}
+                />
+                <Text style={{
+                  textAlign: 'center',
+                  color: 'white',
+                  fontFamily: 'GeistMono-Light',
+                  fontSize: 11,
+                }}
+                  numberOfLines={1}
+                  ellipsizeMode="tail">
+                  {category.name}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
       )}
       <View style={styles.form}>
@@ -104,21 +128,25 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     width: '100%',
   },
   options: {
-    borderWidth: 2,
+    backgroundColor: theme.colors.surface,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderRadius: 8,
     flexDirection: 'row',
     flexWrap: 'wrap',
     width: '100%',
     alignItems: 'center',
     gap: 2,
-    padding: 4
+    paddingVertical: 8,
+    paddingHorizontal: 4
   },
   option: {
-    flexDirection: 'row',
+    width: 60,
     alignItems: 'center',
+    justifyContent: 'center',
     padding: 4,
     gap: 2,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderRadius: 6,
     backgroundColor: theme.colors.surface,
   },
   form: {

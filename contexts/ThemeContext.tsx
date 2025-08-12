@@ -114,6 +114,13 @@ const darkTheme: ThemeColors = {
   orange: '#FB923C',
 };
 
+// Type para las claves de colores válidas
+export type ColorKey = keyof Pick<ThemeColors, 
+  'red' | 'pink' | 'rose' | 'coral' | 'purple' | 'violet' | 'fuchsia' | 'lavender' |
+  'blue' | 'indigo' | 'cyan' | 'sky' | 'green' | 'emerald' | 'teal' | 'mint' | 'lime' |
+  'yellow' | 'amber' | 'orange'
+>;
+
 interface ThemeContextType {
   theme: Theme;
 }

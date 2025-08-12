@@ -1,7 +1,6 @@
 import { categories, spent } from "@/db/schema";
 import { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import AsyncStorage from 'expo-sqlite/kv-store';
-import addDummyData from './addDummyData';
 
 export default async function resetDatabase(db: ExpoSQLiteDatabase) {
   console.log('Resetting database...');
@@ -14,7 +13,7 @@ export default async function resetDatabase(db: ExpoSQLiteDatabase) {
   AsyncStorage.removeItemSync('dbInitialized');
   
   // Re-add dummy data
-  await addDummyData(db);
+  // await addDummyData(db);
   
   console.log('Database reset complete');
 }

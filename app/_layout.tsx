@@ -9,7 +9,6 @@ import { useEffect } from 'react';
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import addDummyData from './addDummyData';
-// import resetDatabase from './resetDatabase';
 
 export const DATABASE_NAME = 'example';
 
@@ -27,9 +26,8 @@ function DatabaseManager() {
   console.log('Migration status - success:', success, 'error:', error);
 
   useEffect(() => {
-    // resetDatabase(db)
     console.log('useEffect en DatabaseManager - success:', success, 'error:', error);
-    
+    // resetDatabase(db);
     if (success) {
       console.log('Ejecutando addDummyData...');
       try {
