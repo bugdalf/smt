@@ -1,4 +1,4 @@
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, ReactNode, useContext } from 'react';
 import { useColorScheme } from 'react-native';
 
 export interface ThemeColors {
@@ -9,6 +9,32 @@ export interface ThemeColors {
   border: string;
   primary: string;
   primaryText: string;
+  // colores de acento
+  // **Rojos**
+  red: string;
+  pink: string;
+  rose: string;
+  coral: string;
+  // **Púrpuras**
+  purple: string;
+  violet: string;
+  fuchsia: string;
+  lavender: string;
+  // **Azules**
+  blue: string;
+  indigo: string;
+  cyan: string;
+  sky: string;
+  // **Verdes**
+  green: string;
+  emerald: string;
+  teal: string;
+  mint: string;
+  lime: string;
+  // **Amarillos/Naranjas**
+  yellow: string;
+  amber: string;
+  orange: string;
 }
 
 export interface Theme {
@@ -24,6 +50,32 @@ const lightTheme: ThemeColors = {
   border: '#e9ecef',
   primary: '#007AFF',
   primaryText: '#ffffff',
+  // Colores de acento para tema light
+  // **Rojos**
+  red: '#EF4444',
+  pink: '#EC4899',
+  rose: '#F43F5E',
+  coral: '#FF6B6B',
+  // **Púrpuras**
+  purple: '#8B5CF6',
+  violet: '#7C3AED',
+  fuchsia: '#D946EF',
+  lavender: '#9D7AEA',
+  // **Azules**
+  blue: '#3B82F6',
+  indigo: '#6366F1',
+  cyan: '#06B6D4',
+  sky: '#0EA5E9',
+  // **Verdes**
+  green: '#22C55E',
+  emerald: '#10B981',
+  teal: '#14B8A6',
+  mint: '#00D4AA',
+  lime: '#84CC16',
+  // **Amarillos/Naranjas**
+  yellow: '#EAB308',
+  amber: '#F59E0B',
+  orange: '#F97316',
 };
 
 const darkTheme: ThemeColors = {
@@ -34,6 +86,32 @@ const darkTheme: ThemeColors = {
   border: '#38383a',
   primary: '#0A84FF',
   primaryText: '#ffffff',
+  // Colores de acento para tema dark (versiones más suaves)
+  // **Rojos**
+  red: '#F87171',
+  pink: '#F472B6',
+  rose: '#FB7185',
+  coral: '#FF8A8A',
+  // **Púrpuras**
+  purple: '#A78BFA',
+  violet: '#8B5CF6',
+  fuchsia: '#E879F9',
+  lavender: '#B794F6',
+  // **Azules**
+  blue: '#60A5FA',
+  indigo: '#818CF8',
+  cyan: '#22D3EE',
+  sky: '#38BDF8',
+  // **Verdes**
+  green: '#4ADE80',
+  emerald: '#34D399',
+  teal: '#2DD4BF',
+  mint: '#5EEAD4',
+  lime: '#A3E635',
+  // **Amarillos/Naranjas**
+  yellow: '#FDE047',
+  amber: '#FBBF24',
+  orange: '#FB923C',
 };
 
 interface ThemeContextType {

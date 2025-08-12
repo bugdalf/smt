@@ -10,12 +10,14 @@ import IconCategory from "./IconCatergory";
 
 interface InputCategorySpentProps {
   category: schema.Category | undefined;
-  onChangeCategory: (value: schema.Category) => void;
+  isVisibleOptions: boolean;
+  onSetVisibleOptions: (value: boolean) => void;
 }
 
 export default function InputCategorySpent({
   category,
-  onChangeCategory,
+  isVisibleOptions,
+  onSetVisibleOptions,
 }: InputCategorySpentProps) {
   const [categories, setCategories] = useState<schema.Category[]>([]);
 
@@ -31,7 +33,6 @@ export default function InputCategorySpent({
       try {
         const data = await drizzleDb.query.categories.findMany();
         setCategories(data);
-        console.log(data);
       } catch (error) {
         console.error('Error loading categories:', error);
       }
@@ -43,37 +44,16 @@ export default function InputCategorySpent({
     <View>
       <TouchableOpacity
         style={styles.buttonTrigger}
-        onPress={() => console.log('asf')}
+        onPress={() => onSetVisibleOptions(!isVisibleOptions)}
         activeOpacity={0.7}
       >
         <IconCategory name="LayoutGrid" color={theme.colors.primary} size={20} />
       </TouchableOpacity>
-      {/* <Text style={styles.text}>Ingrese categoría:</Text>
-      <View style={styles.container}>
-        {categories.map((cat) => (
-          <Pressable
-            key={cat.id}
-            style={[
-              styles.button,
-              category?.id === cat.id && styles.selectedButton
-            ]}
-            onPress={() => onChangeCategory(cat)}>
-            <IconCategory name={cat.icon as IconName} color={category?.id === cat.id ? theme.colors.background : theme.colors.primary} size={20} />
-          </Pressable>
-        ))}
-      </View> */}
     </View>
   )
 }
 
 const createStyles = (theme: Theme) => StyleSheet.create({
-  container: {
-    backgroundColor: theme.colors.background,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   buttonTrigger: {
     width: 42,
     height: 42,
@@ -84,25 +64,5 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 50,
-    height: 50,
-    padding: 10,
-    margin: 5,
-    borderRadius: 5,
-    backgroundColor: theme.colors.background,
-    borderWidth: 1,
-    borderColor: theme.colors.primary,
-  },
-  selectedButton: {
-    backgroundColor: theme.colors.primary,
-    color: theme.colors.background,
-  },
-  text: {
-    fontFamily: 'GeistMono-Regular',
-    color: theme.colors.textSecondary,
-  },
+
 })

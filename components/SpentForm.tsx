@@ -3,7 +3,7 @@ import * as schema from "@/db/schema";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useSQLiteContext } from "expo-sqlite";
 import { useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import IconCategory from "./IconCatergory";
 import InputCategorySpent from "./InputCategorySpent";
 import InputInfoSpent from "./InputInfoSpent";
@@ -19,6 +19,8 @@ export default function SpentForm() {
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<schema.Category | undefined>(undefined);
+
+  const [isVisibleOptions, setIsVisibleOptions] = useState(true);
 
   const handleSubmit = () => {
     console.log('Guardando...');
@@ -41,33 +43,54 @@ export default function SpentForm() {
   }
 
   return (
-    <View style={styles.form}>
-      <InputMountSpent
-        label="Ingrese monto:"
-        value={amount}
-        onChangeText={setAmount}
-      />
-      <InputInfoSpent
-        label="Ingrese descripción:"
-        value={description}
-        onChangeText={setDescription}
-      />
-      <InputCategorySpent
-        category={category}
-        onChangeCategory={setCategory}
-      />
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleSubmit}
-        activeOpacity={0.7}
-      >
-        <IconCategory name="ArrowBigUpDash" color="white" size={25} />
-      </TouchableOpacity>
+    <View style={styles.container}>
+      {isVisibleOptions && (
+        <View style={styles.options}>
+          <Text>Este view se muestra condicionalmente</Text>
+        </View>
+      )}
+      <View style={styles.form}>
+        <InputMountSpent
+          label="Ingrese monto:"
+          value={amount}
+          onChangeText={setAmount}
+        />
+        <InputInfoSpent
+          label="Ingrese descripción:"
+          value={description}
+          onChangeText={setDescription}
+        />
+        <InputCategorySpent
+          category={category}
+          isVisibleOptions={isVisibleOptions}
+          onSetVisibleOptions={setIsVisibleOptions}
+        />
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleSubmit}
+          activeOpacity={0.7}
+        >
+          <IconCategory name="ArrowBigUpDash" color="white" size={25} />
+        </TouchableOpacity>
+      </View>
     </View>
   )
 }
 
 const createStyles = (theme: Theme) => StyleSheet.create({
+  container: {
+    width: '100%',
+  },
+  options: {
+    borderWidth: 2,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    width: '100%',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 2,
+    padding: 4
+  },
   form: {
     flexDirection: 'row',
     width: '100%',
