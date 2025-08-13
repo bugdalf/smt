@@ -15,13 +15,13 @@ export const DATABASE_NAME = 'example';
 // Componente interno que maneja las migraciones
 function DatabaseManager() {
   console.log('DatabaseManager renderizado');
-  
+
   const database = useSQLiteContext();
   console.log('useSQLiteContext obtenido:', !!database);
-  
+
   const db = drizzle(database);
   console.log('drizzle db creado:', !!db);
-  
+
   const { success, error } = useMigrations(db, migrations);
   console.log('Migration status - success:', success, 'error:', error);
 
@@ -37,7 +37,7 @@ function DatabaseManager() {
         console.error('Error en addDummyData:', err);
       }
     }
-    
+
     if (error) {
       console.error('Error en migraciones:', error);
     }
@@ -48,7 +48,7 @@ function DatabaseManager() {
 
 export default function RootLayout() {
   console.log('RootLayout renderizado');
-  
+
   const [fontsLoaded] = useFonts({
     'GeistMono-Light': require('../assets/fonts/GeistMono-Light.ttf'),
     'GeistMono-Regular': require('../assets/fonts/GeistMono-Regular.ttf'),
@@ -69,14 +69,21 @@ export default function RootLayout() {
         <SQLiteProvider
           databaseName={DATABASE_NAME}
           options={{ enableChangeListener: true }}
-          // Remover useSuspense para evitar problemas
+        // Remover useSuspense para evitar problemas
         >
           <DatabaseManager />
           <KeyboardProvider>
             <Stack>
-              <Stack.Screen 
-                name='index' 
-                options={{ title: 'Simple Money Tracker', headerShown: false }} 
+              <Stack.Screen
+                name='index'
+                options={{ title: 'Simple Money Tracker', headerShown: false }}
+              />
+              <Stack.Screen
+                name="modal"
+                options={{
+                  presentation: 'modal',
+                  headerShown: false,
+                }}
               />
             </Stack>
           </KeyboardProvider>

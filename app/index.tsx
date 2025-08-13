@@ -3,6 +3,7 @@ import SpentList from '@/components/SpentList';
 import { Theme, useTheme } from '@/contexts/ThemeContext';
 import * as schema from '@/db/schema';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
+import { Link } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import {
@@ -16,6 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function HomeScreen() {
   const { theme } = useTheme();
   const styles = createStyles(theme);
+
   const [data, setData] = useState<schema.Spent[]>([]);
   const db = useSQLiteContext();
   const drizzleDb = drizzle(db, { schema });
@@ -41,6 +43,9 @@ export default function HomeScreen() {
       >
         <View style={styles.header}>
           <Text style={styles.title}>Simple Money Tracker</Text>
+          <Link href="/modal">
+            Configurar Categorías
+          </Link>
         </View>
         <SpentList />
         <SpentForm />
