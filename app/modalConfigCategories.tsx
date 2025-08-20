@@ -5,7 +5,7 @@ import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
-export default function Modal() {
+export default function ModalConfigCategories() {
   const { theme } = useTheme();
   const styles = createStyles(theme);
 

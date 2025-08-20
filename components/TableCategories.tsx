@@ -1,5 +1,6 @@
 import { ColorKey, Theme, useTheme } from '@/contexts/ThemeContext';
 import * as schema from "@/db/schema";
+import { categories } from '@/db/schema';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { useSQLiteContext } from 'expo-sqlite';
 import React, { useEffect, useState } from 'react';
@@ -14,6 +15,37 @@ interface FormData {
   color: ColorKey;
 }
 
+// Lista de iconos disponibles de Lucide React
+const AVAILABLE_ICONS: IconName[] = [
+  'House', 'Car', 'ShoppingCart', 'Coffee', 'Utensils',
+  'Heart', 'Music', 'Camera', 'Gamepad2', 'Book',
+  'Plane', 'Bike', 'Bus', 'Ship',
+  'Wallet', 'CreditCard', 'PiggyBank', 'Coins', 'Banknote',
+  'Shirt', 'Watch', 'Glasses', 'Headphones', 'Smartphone',
+  'Laptop', 'Tv', 'Monitor', 'Keyboard', 'Mouse',
+  'Gift', 'PartyPopper', 'Cake', 'Pizza',
+  'Dumbbell',
+  'Stethoscope', 'Pill', 'Cross', 'Hospital', 'Ambulance',
+  'GraduationCap', 'School', 'BookOpen', 'Pencil', 'Calculator',
+  'MapPin', 'Globe', 'Compass', 'Mountain', 'Trees',
+  'Sun', 'Moon', 'Star', 'Cloud', 'Umbrella'
+];
+
+// Lista de colores disponibles
+const AVAILABLE_COLORS: { name: string; value: ColorKey; hex: string }[] = [
+  { name: 'Azul Cielo', value: 'sky', hex: '#87CEEB' },
+  { name: 'Azul', value: 'blue', hex: '#3B82F6' },
+  { name: 'Verde', value: 'green', hex: '#10B981' },
+  { name: 'Amarillo', value: 'yellow', hex: '#F59E0B' },
+  { name: 'Rojo', value: 'red', hex: '#EF4444' },
+  { name: 'Púrpura', value: 'purple', hex: '#8B5CF6' },
+  { name: 'Rosa', value: 'pink', hex: '#EC4899' },
+  { name: 'Naranja', value: 'orange', hex: '#F97316' },
+  { name: 'Índigo', value: 'indigo', hex: '#6366F1' },
+  { name: 'Esmeralda', value: 'emerald', hex: '#059669' },
+  { name: 'Cian', value: 'cyan', hex: '#06B6D4' },
+];
+
 export default function CrudTable() {
   const db = useSQLiteContext();
   const drizzleDb = drizzle(db, { schema });
@@ -23,6 +55,8 @@ export default function CrudTable() {
 
   // Estados para el modal y formulario
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [iconModalVisible, setIconModalVisible] = useState<boolean>(false);
+  const [colorModalVisible, setColorModalVisible] = useState<boolean>(false);
   const [editingItem, setEditingItem] = useState<Category | null>(null);
   const [formData, setFormData] = useState<FormData>({
     nombre: '',
@@ -65,18 +99,24 @@ export default function CrudTable() {
     setModalVisible(true);
   };
 
+  // Función para seleccionar icono
+  const selectIcon = (iconName: IconName): void => {
+    setFormData({ ...formData, icon: iconName });
+    setIconModalVisible(false);
+  };
+
+  // Función para seleccionar color
+  const selectColor = (colorKey: ColorKey): void => {
+    setFormData({ ...formData, color: colorKey });
+    setColorModalVisible(false);
+  };
+
   // Función para crear nuevo elemento
-  const createItem = (): void => {
+  const createItem = async (): Promise<void> => {
     if (!formData.nombre || !formData.icon || !formData.color) {
       Alert.alert('Error', 'Todos los campos son obligatorios');
       return;
     }
-
-    // const ageNumber = parseInt(formData.edad);
-    // if (isNaN(ageNumber) || ageNumber <= 0) {
-    //   Alert.alert('Error', 'La edad debe ser un número válido');
-    //   return;
-    // }
 
     const newItem: Category = {
       id: Date.now(),
@@ -85,25 +125,26 @@ export default function CrudTable() {
       color: formData.color,
     };
 
+    // Insertar en la base de datos
+    try {
+      await drizzleDb.insert(categories).values(newItem);
+    } catch (error) {
+      console.error('Error creating category:', error);
+    }
+
     setCategoriesData([...categoriesData, newItem]);
     setModalVisible(false);
     setFormData({ nombre: '', icon: '', color: 'sky' });
   };
 
   // Función para actualizar elemento
-  const updateItem = (): void => {
+  const updateItem = async (): Promise<void> => {
     if (!editingItem) return;
     
     if (!formData.nombre || !formData.icon || !formData.color) {
       Alert.alert('Error', 'Todos los campos son obligatorios');
       return;
     }
-
-    // const ageNumber = parseInt(formData.edad);
-    // if (isNaN(ageNumber) || ageNumber <= 0) {
-    //   Alert.alert('Error', 'La edad debe ser un número válido');
-    //   return;
-    // }
 
     // const updatedData = data.map((item: User) =>
     //   item.id === editingItem.id
@@ -154,6 +195,32 @@ export default function CrudTable() {
   const updateFormField = (field: keyof FormData, value: string): void => {
     setFormData({ ...formData, [field]: value });
   };
+
+  // Renderizar cada icono en el selector
+  const renderIconItem = ({ item }: { item: IconName }) => (
+    <TouchableOpacity
+      style={styles.iconItem}
+      onPress={() => selectIcon(item)}
+    >
+      <IconCategory name={item} size={28} color={theme.colors.text} />
+      <Text style={styles.iconName}>{item}</Text>
+    </TouchableOpacity>
+  );
+
+  // Renderizar cada color en el selector
+  const renderColorItem = ({ item }: { item: { name: string; value: ColorKey; hex: string } }) => (
+    <TouchableOpacity
+      style={[styles.colorItem, { backgroundColor: item.hex }]}
+      onPress={() => selectColor(item.value)}
+    >
+      <Text style={styles.colorName}>{item.name}</Text>
+      {formData.color === item.value && (
+        <View style={styles.colorSelected}>
+          <IconCategory name="Check" size={16} color="white" />
+        </View>
+      )}
+    </TouchableOpacity>
+  );
 
   // Renderizar cada fila de la tabla
   const renderTableRow: ListRenderItem<Category> = ({ item }) => (
@@ -217,7 +284,6 @@ export default function CrudTable() {
         />
       </View>
 
-
       {/* Modal para crear/editar */}
       <Modal
         visible={modalVisible}
@@ -238,22 +304,45 @@ export default function CrudTable() {
               onChangeText={(text: string) => updateFormField('nombre', text)}
             />
 
-            <TextInput
-              style={styles.input}
-              placeholder="Icono"
-              value={formData.icon}
-              onChangeText={(text: string) => updateFormField('icon', text)}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
+            {/* Campo de icono con selector visual */}
+            <View style={styles.iconInputContainer}>
+              <Text style={styles.inputLabel}>Icono</Text>
+              <TouchableOpacity
+                style={styles.iconSelector}
+                onPress={() => setIconModalVisible(true)}
+              >
+                <View style={styles.iconPreview}>
+                  {formData.icon ? (
+                    <IconCategory 
+                      name={formData.icon as IconName} 
+                      size={24} 
+                      color={theme.colors.text} 
+                    />
+                  ) : (
+                    <Text style={styles.iconPlaceholder}>Seleccionar</Text>
+                  )}
+                </View>
+                <Text style={styles.iconSelectorText}>
+                  {formData.icon || 'Toca para seleccionar un icono'}
+                </Text>
+                <IconCategory name="ChevronDown" size={20} color={theme.colors.text} />
+              </TouchableOpacity>
+            </View>
 
-            <TextInput
-              style={styles.input}
-              placeholder="Color"
-              value={formData.color}
-              onChangeText={(text: string) => updateFormField('color', text)}
-              keyboardType="numeric"
-            />
+            {/* Campo de color con selector visual */}
+            <View style={styles.colorInputContainer}>
+              <Text style={styles.inputLabel}>Color</Text>
+              <TouchableOpacity
+                style={styles.colorSelector}
+                onPress={() => setColorModalVisible(true)}
+              >
+                <View style={[styles.colorPreview, { backgroundColor: AVAILABLE_COLORS.find(c => c.value === formData.color)?.hex || '#87CEEB' }]} />
+                <Text style={styles.colorSelectorText}>
+                  {AVAILABLE_COLORS.find(c => c.value === formData.color)?.name || 'Seleccionar color'}
+                </Text>
+                <IconCategory name="ChevronDown" size={20} color={theme.colors.text} />
+              </TouchableOpacity>
+            </View>
 
             <View style={styles.modalButtons}>
               <TouchableOpacity
@@ -272,6 +361,70 @@ export default function CrudTable() {
                 </Text>
               </TouchableOpacity>
             </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal selector de iconos */}
+      <Modal
+        visible={iconModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setIconModalVisible(false)}
+      >
+        <View style={styles.iconModalOverlay}>
+          <View style={styles.iconModalContent}>
+            <View style={styles.iconModalHeader}>
+              <Text style={styles.iconModalTitle}>Selecciona un Icono</Text>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setIconModalVisible(false)}
+              >
+                <IconCategory name="X" size={24} color={theme.colors.text} />
+              </TouchableOpacity>
+            </View>
+            
+            <FlatList
+              data={AVAILABLE_ICONS}
+              renderItem={renderIconItem}
+              keyExtractor={(item) => item}
+              numColumns={4}
+              style={styles.iconList}
+              contentContainerStyle={styles.iconListContainer}
+              showsVerticalScrollIndicator={false}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal selector de colores */}
+      <Modal
+        visible={colorModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setColorModalVisible(false)}
+      >
+        <View style={styles.colorModalOverlay}>
+          <View style={styles.colorModalContent}>
+            <View style={styles.colorModalHeader}>
+              <Text style={styles.colorModalTitle}>Selecciona un Color</Text>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setColorModalVisible(false)}
+              >
+                <IconCategory name="X" size={24} color={theme.colors.text} />
+              </TouchableOpacity>
+            </View>
+            
+            <FlatList
+              data={AVAILABLE_COLORS}
+              renderItem={renderColorItem}
+              keyExtractor={(item) => item.value}
+              numColumns={2}
+              style={styles.colorList}
+              contentContainerStyle={styles.colorListContainer}
+              showsVerticalScrollIndicator={false}
+            />
           </View>
         </View>
       </Modal>
@@ -378,6 +531,77 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     marginBottom: 16,
     fontSize: 16,
   },
+  inputLabel: {
+    fontFamily: 'GeistMono-Regular',
+    fontSize: 14,
+    color: theme.colors.text,
+    marginBottom: 8,
+  },
+  iconInputContainer: {
+    marginBottom: 16,
+  },
+  iconSelector: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f9f9f9',
+  },
+  iconPreview: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  iconPlaceholder: {
+    color: '#999',
+    fontSize: 12,
+  },
+  iconSelectorText: {
+    flex: 1,
+    fontFamily: 'GeistMono-Regular',
+    fontSize: 14,
+    color: theme.colors.text,
+  },
+  colorInputContainer: {
+    marginBottom: 16,
+  },
+  colorSelector: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f9f9f9',
+  },
+  colorPreview: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    marginRight: 12,
+    borderWidth: 2,
+    borderColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  colorSelectorText: {
+    flex: 1,
+    fontFamily: 'GeistMono-Regular',
+    fontSize: 14,
+    color: theme.colors.text,
+  },
   modalButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -400,5 +624,132 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     fontFamily: 'GeistMono-Regular',
     color: 'white',
     fontSize: 16,
+  },
+  // Estilos para el modal de iconos
+  iconModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconModalContent: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    width: '90%',
+    maxHeight: '80%',
+    padding: 20,
+  },
+  iconModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  iconModalTitle: {
+    fontFamily: 'GeistMono-Bold',
+    fontSize: 18,
+    color: theme.colors.text,
+  },
+  closeButton: {
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: '#f5f5f5',
+  },
+  iconList: {
+    flex: 1,
+  },
+  iconListContainer: {
+    paddingBottom: 20,
+  },
+  iconItem: {
+    flex: 1,
+    alignItems: 'center',
+    padding: 12,
+    margin: 4,
+    backgroundColor: '#f8f8f8',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  iconName: {
+    marginTop: 4,
+    fontSize: 10,
+    textAlign: 'center',
+    color: '#666',
+    fontFamily: 'GeistMono-Regular',
+  },
+  // Estilos para el modal de colores
+  colorModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  colorModalContent: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    width: '90%',
+    height: 300,
+    maxHeight: '70%',
+    padding: 20,
+  },
+  colorModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  colorModalTitle: {
+    fontFamily: 'GeistMono-Bold',
+    fontSize: 18,
+    color: theme.colors.text,
+  },
+  colorList: {
+    flex: 1,
+  },
+  colorListContainer: {
+    paddingBottom: 20,
+  },
+  colorItem: {
+    flex: 1,
+    margin: 8,
+    padding: 16,
+    borderRadius: 12,
+    minHeight: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  colorName: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+    fontFamily: 'GeistMono-Regular',
+  },
+  colorSelected: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: 12,
+    padding: 4,
   },
 });

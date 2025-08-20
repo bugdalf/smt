@@ -43,7 +43,7 @@ export default function HomeScreen() {
       >
         <View style={styles.header}>
           <Text style={styles.title}>Simple Money Tracker</Text>
-          <Link href="/modal">
+          <Link href="/modalConfigCategories">
             Configurar Categorías
           </Link>
         </View>

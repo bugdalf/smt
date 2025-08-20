@@ -79,7 +79,7 @@ export default function RootLayout() {
                 options={{ title: 'Simple Money Tracker', headerShown: false }}
               />
               <Stack.Screen
-                name="modal"
+                name="modalConfigCategories"
                 options={{
                   presentation: 'modal',
                   headerShown: false,
