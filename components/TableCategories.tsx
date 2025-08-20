@@ -60,7 +60,7 @@ export default function CrudTable() {
   const [editingItem, setEditingItem] = useState<Category | null>(null);
   const [formData, setFormData] = useState<FormData>({
     nombre: '',
-    icon: '',
+    icon: 'House',
     color: 'sky',
   });
 
@@ -84,7 +84,7 @@ export default function CrudTable() {
   // Función para abrir modal de creación
   const openCreateModal = (): void => {
     setEditingItem(null);
-    setFormData({ nombre: '', icon: '', color: 'sky' });
+    setFormData({ nombre: '', icon: 'House', color: 'sky' });
     setModalVisible(true);
   };
 
@@ -134,7 +134,7 @@ export default function CrudTable() {
 
     setCategoriesData([...categoriesData, newItem]);
     setModalVisible(false);
-    setFormData({ nombre: '', icon: '', color: 'sky' });
+    setFormData({ nombre: '', icon: 'House', color: 'sky' });
   };
 
   // Función para actualizar elemento
@@ -203,7 +203,6 @@ export default function CrudTable() {
       onPress={() => selectIcon(item)}
     >
       <IconCategory name={item} size={28} color={theme.colors.text} />
-      <Text style={styles.iconName}>{item}</Text>
     </TouchableOpacity>
   );
 
@@ -213,7 +212,6 @@ export default function CrudTable() {
       style={[styles.colorItem, { backgroundColor: item.hex }]}
       onPress={() => selectColor(item.value)}
     >
-      <Text style={styles.colorName}>{item.name}</Text>
       {formData.color === item.value && (
         <View style={styles.colorSelected}>
           <IconCategory name="Check" size={16} color="white" />
@@ -420,7 +418,7 @@ export default function CrudTable() {
               data={AVAILABLE_COLORS}
               renderItem={renderColorItem}
               keyExtractor={(item) => item.value}
-              numColumns={2}
+              numColumns={4}
               style={styles.colorList}
               contentContainerStyle={styles.colorListContainer}
               showsVerticalScrollIndicator={false}
@@ -636,21 +634,18 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 12,
     width: '90%',
-    maxHeight: '80%',
-    padding: 20,
+    height: 300,
+    maxHeight: '70%',
+    padding: 10,
   },
   iconModalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
   },
   iconModalTitle: {
     fontFamily: 'GeistMono-Bold',
-    fontSize: 18,
+    fontSize: 14,
     color: theme.colors.text,
   },
   closeButton: {
@@ -694,60 +689,34 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     width: '90%',
     height: 300,
     maxHeight: '70%',
-    padding: 20,
+    padding: 10,
   },
   colorModalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
   },
   colorModalTitle: {
     fontFamily: 'GeistMono-Bold',
-    fontSize: 18,
+    fontSize: 14,
     color: theme.colors.text,
   },
   colorList: {
     flex: 1,
   },
   colorListContainer: {
-    paddingBottom: 20,
+    paddingBottom: 10,
   },
   colorItem: {
     flex: 1,
-    margin: 8,
-    padding: 16,
-    borderRadius: 12,
-    minHeight: 80,
+    margin: 4,
+    padding: 8,
+    borderRadius: 6,
+    height: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  colorName: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: 'white',
-    textAlign: 'center',
-    textShadowColor: 'rgba(0, 0, 0, 0.5)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-    fontFamily: 'GeistMono-Regular',
   },
   colorSelected: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
     borderRadius: 12,
     padding: 4,
