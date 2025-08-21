@@ -1,6 +1,8 @@
+import IconCategory from '@/components/IconCatergory';
 import { Category } from '@/components/InputCategorySpent';
 import SpentForm from '@/components/SpentForm';
 import SpentList from '@/components/SpentList';
+import SpentResume from '@/components/SpentResume';
 import { ColorKey, Theme, useTheme } from '@/contexts/ThemeContext';
 import * as schema from '@/db/schema';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
@@ -62,10 +64,11 @@ export default function HomeScreen() {
       >
         <View style={styles.header}>
           <Text style={styles.title}>Simple Money Tracker</Text>
-          <Link href="/modalConfigCategories">
-            Configurar Categorías
+          <Link href="/modalConfigCategories" style={styles.link}>
+            <IconCategory name="Settings" color={theme.colors.text} size={20} />
           </Link>
         </View>
+        <SpentResume data={data} categories={categories}/>
         <SpentList setData={setData} data={data} categories={categories}/>
         <SpentForm categories={categories}/>
       </KeyboardAvoidingView>
@@ -86,6 +89,12 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     paddingTop: 20,
+    position: 'relative',
+  },
+  link: {
+    position: 'absolute',
+    right: 20,
+    top: 20,
   },
   title: {
     fontFamily: 'GeistMono-Light',

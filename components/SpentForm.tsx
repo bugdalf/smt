@@ -23,7 +23,6 @@ export default function SpentForm({ categories }: { categories: Category[] }) {
   const [isVisibleOptions, setIsVisibleOptions] = useState(true);
 
   const handleSubmit = () => {
-    console.log(amount, description, category);
     const insert = async () => {
       try {
         await drizzleDb.insert(schema.spent).values({
@@ -32,6 +31,9 @@ export default function SpentForm({ categories }: { categories: Category[] }) {
           category_id: category?.id || 0,
           date: new Date().toISOString(),
         });
+        setAmount('');
+        setDescription('');
+        setCategory(undefined);
       } catch (error) {
         console.error('Error al guardar:', error);
       }
