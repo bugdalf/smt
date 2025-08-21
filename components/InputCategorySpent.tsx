@@ -1,12 +1,8 @@
 // componente de listado de botones
 
 import { ColorKey, Theme, useTheme } from "@/contexts/ThemeContext";
-import * as schema from "@/db/schema";
-import { drizzle } from "drizzle-orm/expo-sqlite";
-import { useSQLiteContext } from "expo-sqlite";
-import { useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import IconCategory from "./IconCatergory";
+import IconCategory, { IconName } from "./IconCatergory";
 
 export interface Category {
   id: number;
@@ -26,22 +22,22 @@ export default function InputCategorySpent({
   isVisibleOptions,
   onSetVisibleOptions,
 }: InputCategorySpentProps) {
-  const [categories, setCategories] = useState<Category[]>([]);
-
-  const db = useSQLiteContext();
-  const drizzleDb = drizzle(db, { schema });
-
   const { theme } = useTheme();
   const styles = createStyles(theme);
 
   return (
     <View>
       <TouchableOpacity
-        style={styles.buttonTrigger}
+        style={[styles.buttonTrigger, { backgroundColor: theme.colors[category?.color as ColorKey] || theme.colors.primary }]}
         onPress={() => onSetVisibleOptions(!isVisibleOptions)}
         activeOpacity={0.7}
       >
-        <IconCategory name="LayoutGrid" color={theme.colors.primary} size={20} />
+        <IconCategory
+          name={category?.icon as IconName || 'LayoutGrid'}
+          color={'white'}
+          size={20}
+          bgColor={theme.colors[category?.color as ColorKey] || theme.colors.primary}
+        />
       </TouchableOpacity>
     </View>
   )
@@ -52,9 +48,6 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 99,
-    borderColor: theme.colors.primary,
-    borderWidth: 1,
-    backgroundColor: theme.colors.background,
     justifyContent: 'center',
     alignItems: 'center',
   },

@@ -147,7 +147,6 @@ export default function CrudTable() {
       return;
     }
 
-    console.log('Updating category:', editingItem, formData);
     handleUpdateItem();
 
     setCategoriesData(categoriesData.map((item: Category) =>

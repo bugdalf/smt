@@ -1,6 +1,7 @@
+import { Category } from '@/components/InputCategorySpent';
 import SpentForm from '@/components/SpentForm';
 import SpentList from '@/components/SpentList';
-import { Theme, useTheme } from '@/contexts/ThemeContext';
+import { ColorKey, Theme, useTheme } from '@/contexts/ThemeContext';
 import * as schema from '@/db/schema';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { Link } from 'expo-router';
@@ -19,6 +20,7 @@ export default function HomeScreen() {
   const styles = createStyles(theme);
 
   const [data, setData] = useState<schema.Spent[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const db = useSQLiteContext();
   const drizzleDb = drizzle(db, { schema });
 
@@ -27,9 +29,26 @@ export default function HomeScreen() {
       try {
         const data = await drizzleDb.query.spent.findMany();
         setData(data);
-        // console.log(data);
       } catch (error) {
         console.error('Error loading gastor:', error);
+      }
+    };
+    load();
+  }, [drizzleDb]);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await drizzleDb.query.categories.findMany();
+        const categoriesData = data.map((category) => ({
+          id: category.id,
+          name: category.name,
+          icon: category.icon,
+          color: category.color as ColorKey,
+        }));
+        setCategories(categoriesData);
+      } catch (error) {
+        console.error('Error loading categories:', error);
       }
     };
     load();
@@ -47,8 +66,8 @@ export default function HomeScreen() {
             Configurar Categorías
           </Link>
         </View>
-        <SpentList />
-        <SpentForm />
+        <SpentList setData={setData} data={data} categories={categories}/>
+        <SpentForm categories={categories}/>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

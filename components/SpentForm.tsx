@@ -1,15 +1,15 @@
-import { ColorKey, Theme, useTheme } from "@/contexts/ThemeContext";
+import { Theme, useTheme } from "@/contexts/ThemeContext";
 import * as schema from "@/db/schema";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useSQLiteContext } from "expo-sqlite";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import IconCategory, { IconName } from "./IconCatergory";
 import InputCategorySpent, { Category } from "./InputCategorySpent";
 import InputInfoSpent from "./InputInfoSpent";
 import InputMountSpent from "./InputMountSpent";
 
-export default function SpentForm() {
+export default function SpentForm({ categories }: { categories: Category[] }) {
   const db = useSQLiteContext();
   const drizzleDb = drizzle(db, { schema });
 
@@ -19,14 +19,11 @@ export default function SpentForm() {
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<Category | undefined>(undefined);
-  const [categories, setCategories] = useState<Category[]>([])
 
   const [isVisibleOptions, setIsVisibleOptions] = useState(true);
 
   const handleSubmit = () => {
-    console.log('Guardando...');
     console.log(amount, description, category);
-
     const insert = async () => {
       try {
         await drizzleDb.insert(schema.spent).values({
@@ -35,7 +32,6 @@ export default function SpentForm() {
           category_id: category?.id || 0,
           date: new Date().toISOString(),
         });
-        console.log('Guardado exitosamente');
       } catch (error) {
         console.error('Error al guardar:', error);
       }
@@ -43,28 +39,11 @@ export default function SpentForm() {
     insert();
   }
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const data = await drizzleDb.query.categories.findMany();
-        setCategories(data.map((category) => ({
-          id: category.id,
-          name: category.name,
-          icon: category.icon,
-          color: category.color as ColorKey,
-        })));
-      } catch (error) {
-        console.error('Error loading categories:', error);
-      }
-    };
-    load();
-  }, []);
-
   return (
     <View style={styles.container}>
       {isVisibleOptions && (
         <View style={styles.options}>
-          {categories.map((category) => {
+          {categories?.map((category) => {
             const categoryColor = theme.colors[category.color];
             return (
               <TouchableOpacity
