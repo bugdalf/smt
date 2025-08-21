@@ -1,6 +1,7 @@
 import { ColorKey, Theme, useTheme } from '@/contexts/ThemeContext';
 import * as schema from "@/db/schema";
 import { categories } from '@/db/schema';
+import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { useSQLiteContext } from 'expo-sqlite';
 import React, { useEffect, useState } from 'react';
@@ -146,25 +147,37 @@ export default function CrudTable() {
       return;
     }
 
-    // const updatedData = data.map((item: User) =>
-    //   item.id === editingItem.id
-    //     ? {
-    //         ...item,
-    //         nombre: formData.nombre,
-    //         email: formData.email,
-    //         edad: ageNumber,
-    //       }
-    //     : item
-    // );
+    console.log('Updating category:', editingItem, formData);
+    handleUpdateItem();
 
-    // setData(updatedData);
+    setCategoriesData(categoriesData.map((item: Category) =>
+      item.id === editingItem.id
+        ? {
+            ...item,
+            nombre: formData.nombre,
+            icon: formData.icon,
+            color: formData.color,
+          }
+        : item
+    ));
+
     setModalVisible(false);
     setEditingItem(null);
     setFormData({ nombre: '', icon: '', color: 'sky' });
   };
 
+  const handleUpdateItem = async (): Promise<void> => {
+    if (!editingItem) return;
+    
+    try {
+      await drizzleDb.update(categories).set(formData).where(eq(categories.id, editingItem.id));
+    } catch (error) {
+      console.error('Error updating category:', error);
+    }
+  };
+
   // Función para eliminar elemento
-  const deleteItem = (id: number): void => {
+  const deleteItem = async (id: number): Promise<void> => {
     Alert.alert(
       'Confirmar eliminación',
       '¿Estás seguro de que quieres eliminar este elemento?',
@@ -174,12 +187,21 @@ export default function CrudTable() {
           text: 'Eliminar',
           style: 'destructive',
           onPress: () => {
-            // const filteredData = data.filter((item: User) => item.id !== id);
-            // setData(filteredData);
+            const filteredData = categoriesData.filter((item: Category) => item.id !== id);
+            setCategoriesData(filteredData);
+            handleDeleteItem(id);
           },
         },
       ]
     );
+  };
+
+  const handleDeleteItem = async (id: number): Promise<void> => {
+    try {
+      await drizzleDb.delete(categories).where(eq(categories.id, id));
+    } catch (error) {
+      console.error('Error deleting category:', error);
+    }
   };
 
   // Función para guardar (crear o actualizar)
