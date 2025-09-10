@@ -1,7 +1,7 @@
 import { ColorKey, Theme, useTheme } from "@/contexts/ThemeContext";
 import * as schema from '@/db/schema';
 import { useMemo } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import IconCategory, { IconName } from "./IconCatergory";
 
 export default function SpentResume({ data, categories }: { data: schema.Spent[], categories: schema.Category[] }) {
@@ -35,7 +35,13 @@ export default function SpentResume({ data, categories }: { data: schema.Spent[]
         <Text>Total: </Text>
         <Text>{formatAmount(total)}</Text>
       </View>
-      <View style={styles.categoriesContainer}>
+      
+      <ScrollView
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+        style={styles.scrollView}
+      >
         {groups.map((group) => (
           <View key={group.category.id} style={styles.category}>
             <View style={styles.categoryIcon}>
@@ -44,10 +50,10 @@ export default function SpentResume({ data, categories }: { data: schema.Spent[]
               </View>
               <Text style={styles.categoryText}>{group.category.name}</Text>
             </View>
-            <Text>{formatAmount(group.amount)}</Text>
+            <Text style={styles.categoryAmount}>{formatAmount(group.amount)}</Text>
           </View>
         ))}
-      </View>
+      </ScrollView>
     </View>
   )
 }
@@ -62,11 +68,14 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 10,
   },
-  categoriesContainer: {
-    flexDirection: 'row',
+  scrollView: {
+    flexGrow: 0, // Previene que el ScrollView crezca más de lo necesario
+  },
+  scrollContent: {
+    paddingHorizontal: 5,
     alignItems: 'center',
-    justifyContent: 'center',
   },
   categoryIcon: {
     flexDirection: 'column',
@@ -80,13 +89,22 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.colors.border,
     borderRadius: 8,
-    padding: 4,
-    margin: 4,
+    padding: 8,
+    marginHorizontal: 4,
+    minWidth: 100, // Ancho mínimo para acomodar el layout horizontal
     gap: 4,
   },
   categoryText: {
     fontFamily: 'GeistMono-Light',
     fontSize: 10,
     color: theme.colors.text,
+    textAlign: 'center',
+  },
+  categoryAmount: {
+    fontFamily: 'GeistMono-Light',
+    fontSize: 12,
+    color: theme.colors.text,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 })
